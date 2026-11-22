@@ -56,7 +56,10 @@ product = child(
     UpgradeCode="89F71861-195D-459A-8723-170CC5D3C4EC"
 )
 
-child(product, "Package", InstallerVersion="500", Compressed="yes", InstallScope="perMachine")
+package_attrs = {"InstallerVersion": "500", "Compressed": "yes", "InstallScope": "perMachine"}
+if arch == "arm64":
+    package_attrs["Platform"] = "arm64"
+child(product, "Package", **package_attrs)
 child(product, "MajorUpgrade", DowngradeErrorMessage="A newer TZWorkQuint MSI is already installed.")
 child(product, "MediaTemplate", EmbedCab="yes", CompressionLevel="high")
 

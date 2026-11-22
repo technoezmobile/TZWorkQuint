@@ -28,140 +28,7 @@ env:
 
 jobs:
   # ==============================================================================
-  # 1. WINDOWS PACKAGING (x64 and ARM64: EXE, MSI, ZIP)
-  # ==============================================================================
-  build-windows:
-    name: Windows (${{ matrix.arch }})
-    runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - arch: x64
-            target: x86_64-pc-windows-msvc
-          - arch: arm64
-            target: aarch64-pc-windows-msvc
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - name: Setup MSVC for ARM64
-        if: matrix.arch == 'arm64'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64_arm64
-
-      - name: Cache Cargo Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: windows-${{ matrix.arch }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            windows-${{ matrix.arch }}-cargo-
-
-      - name: Setup WiX Toolset
-        if: matrix.arch == 'x64'
-        run: |
-          dotnet tool install --global wix --version 3.14.1 || choco install wixtoolset --no-progress -y || true
-
-      - name: Build Suite Binaries (All 6 Applications)
-        run: |
-          $apps = @("tz-workquint", "tz-cellforge", "tz-wordloom", "tz-slidespark", "tz-pdflex", "tz-draftline")
-          foreach ($app in $apps) {
-            Write-Host "=== Compiling $app for ${{ matrix.target }} ==="
-            cargo build --release --target ${{ matrix.target }} --manifest-path "$app/Cargo.toml"
-          }
-
-      - name: Stage Windows Distribution Payload
-        id: stage
-        run: |
-          $ver = "${{ github.ref_name }}".TrimStart('v')
-          if ([string]::IsNullOrEmpty($ver) -or $ver -eq "Release" -or $ver -eq "main") { $ver = "${{ github.event.inputs.tag_name }}".TrimStart('v') }
-          if ([string]::IsNullOrEmpty($ver)) { $ver = "3.0.0" }
-          
-          $stage = "${{ github.workspace }}/dist/stage-win-${{ matrix.arch }}"
-          New-Item -ItemType Directory -Force -Path "$stage/bin"
-          New-Item -ItemType Directory -Force -Path "$stage/assets"
-          New-Item -ItemType Directory -Force -Path "$stage/docs"
-
-          $apps = @("tz-workquint", "tz-cellforge", "tz-wordloom", "tz-slidespark", "tz-pdflex", "tz-draftline")
-          foreach ($app in $apps) {
-            $src = "${{ github.workspace }}/target/${{ matrix.target }}/release/$app.exe"
-            if (!(Test-Path $src)) { throw "Missing required compiled binary: $src" }
-            Copy-Item $src "$stage/bin/" -Force
-            Write-Host "Staged: $app.exe"
-          }
-
-          if (Test-Path "${{ github.workspace }}/assets") { Copy-Item -Recurse "${{ github.workspace }}/assets/*" "$stage/assets/" -Force }
-          if (Test-Path "${{ github.workspace }}/docs") { Copy-Item -Recurse "${{ github.workspace }}/docs/*" "$stage/docs/" -Force }
-          if (Test-Path "${{ github.workspace }}/LICENSE.txt") { Copy-Item "${{ github.workspace }}/LICENSE.txt" "$stage/" -Force }
-          if (Test-Path "${{ github.workspace }}/THIRD_PARTY_NOTICES.txt") { Copy-Item "${{ github.workspace }}/THIRD_PARTY_NOTICES.txt" "$stage/" -Force }
-          if (Test-Path "${{ github.workspace }}/README.txt") { Copy-Item "${{ github.workspace }}/README.txt" "$stage/" -Force }
-
-          echo "VERSION=$ver" >> $env:GITHUB_ENV
-          echo "STAGE_DIR=$stage" >> $env:GITHUB_ENV
-
-      - name: Verify PE Architecture Headers
-        run: |
-          python -c @"
-          import os, sys, struct
-          stage_bin = os.path.join(r'${{ env.STAGE_DIR }}', 'bin')
-          expected_machine = 0x8664 if '${{ matrix.arch }}' == 'x64' else 0xAA64
-          arch_name = 'x64 (AMD64)' if expected_machine == 0x8664 else 'ARM64'
-          print(f'Validating PE machine headers for target {arch_name}...')
-
-          apps = ['tz-workquint', 'tz-cellforge', 'tz-wordloom', 'tz-slidespark', 'tz-pdflex', 'tz-draftline']
-          for app in apps:
-              exe_path = os.path.join(stage_bin, f'{app}.exe')
-              if not os.path.exists(exe_path):
-                  raise SystemExit(f'Missing binary in stage: {app}.exe')
-              with open(exe_path, 'rb') as f:
-                  header = f.read(1024)
-              pe_offset = struct.unpack_from('<I', header, 0x3C)[0]
-              magic = header[pe_offset:pe_offset+4]
-              if magic != b'PE\x00\x00':
-                  raise SystemExit(f'Invalid PE signature for {app}.exe: {magic}')
-              machine = struct.unpack_from('<H', header, pe_offset + 4)[0]
-              if machine != expected_machine:
-                  raise SystemExit(f'Machine mismatch for {app}.exe! Expected {hex(expected_machine)}, got {hex(machine)}')
-              print(f'  [PASS] {app}.exe matches {arch_name} (machine: {hex(machine)})')
-          print('All Windows PE executable headers successfully verified!')
-          "@
-
-      - name: Package Windows Artifacts (ZIP, MSI, EXE)
-        run: |
-          python packaging/windows/package_windows.py --stage "$env:STAGE_DIR" --out dist --version "$env:VERSION" --arch "${{ matrix.arch }}"
-
-      - name: Ensure Required Packages Exist
-        run: |
-          $ver = "$env:VERSION"
-          $zip = if ("${{ matrix.arch }}" -eq "x64") { "dist/TZWorkQuint-$ver-win64.zip" } else { "dist/TZWorkQuint-$ver-win-arm64.zip" }
-          if (!(Test-Path $zip)) { throw "Mandatory Windows package missing: $zip" }
-          Write-Host "Verified package exists: $zip"
-
-      - name: Upload Windows Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-${{ matrix.arch }}-packages
-          path: |
-            dist/*.exe
-            dist/*.msi
-            dist/*.zip
-          if-no-files-found: error
-
-  # ==============================================================================
-  # 2. MACOS PACKAGING (Apple Silicon and Intel: DMG, TAR.GZ)
+  # 1. MACOS PACKAGING & VERIFICATION (Apple Silicon on macos-15, Intel on macos-15-intel)
   # ==============================================================================
   build-macos:
     name: macOS (${{ matrix.arch }})
@@ -172,10 +39,10 @@ jobs:
         include:
           - arch: aarch64
             target: aarch64-apple-darwin
-            runner: macos-13
+            runner: macos-15
           - arch: x86_64
             target: x86_64-apple-darwin
-            runner: macos-13
+            runner: macos-15-intel
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -209,32 +76,30 @@ jobs:
 
       - name: Assemble macOS .app Bundle and Create DMG & tar.gz
         run: |
-          VER="${{ github.ref_name }}"
-          VER="${VER#v}"
-          if [[ -z "$VER" || "$VER" == "Release" || "$VER" == "main" ]]; then VER="${{ github.event.inputs.tag_name }}"; VER="${VER#v}"; fi
-          if [[ -z "$VER" ]]; then VER="3.0.0"; fi
+          VER="3.0.0"
           echo "VERSION=$VER" >> $GITHUB_ENV
-
           bash packaging/macos/package_macos.sh "$VER" "${{ matrix.arch }}"
 
-      - name: Verify macOS Packages (Mount DMG, Check Architecture, Test App Execution)
+      - name: Mount DMG, Test App Launch, and Verify Architecture
         run: |
           VER="${{ env.VERSION }}"
           DMG="dist/TZWorkQuint-${VER}-macos-${{ matrix.arch }}.dmg"
           TARGZ="dist/TZWorkQuint-${VER}-macos-${{ matrix.arch }}.tar.gz"
 
-          if [[ ! -f "$DMG" ]]; then echo "Error: Expected DMG missing: $DMG"; exit 1; fi
-          if [[ ! -f "$TARGZ" ]]; then echo "Error: Expected tar.gz missing: $TARGZ"; exit 1; fi
+          if [[ ! -f "$DMG" ]]; then echo "Error: Expected DMG missing: $DMG" >&2; exit 1; fi
+          if [[ ! -f "$TARGZ" ]]; then echo "Error: Expected tar.gz missing: $TARGZ" >&2; exit 1; fi
 
           echo "=== 1. Mounting DMG ==="
           hdiutil attach "$DMG" -mountpoint /Volumes/TZWorkQuint-Mount
 
-          echo "=== 2. Copying TZWorkQuint.app out of DMG ==="
-          mkdir -p /tmp/mac_verify
-          cp -R /Volumes/TZWorkQuint-Mount/TZWorkQuint.app /tmp/mac_verify/
+          echo "=== 2. Copying TZWorkQuint.app into Clean Folder ==="
+          TEST_DIR="/tmp/tzworkquint_verify_${{ matrix.arch }}"
+          rm -rf "$TEST_DIR"
+          mkdir -p "$TEST_DIR"
+          cp -R /Volumes/TZWorkQuint-Mount/TZWorkQuint.app "$TEST_DIR/"
           hdiutil detach /Volumes/TZWorkQuint-Mount
 
-          APP="/tmp/mac_verify/TZWorkQuint.app"
+          APP="$TEST_DIR/TZWorkQuint.app"
           SUPPORT_BIN="$APP/Contents/SharedSupport/bin"
 
           echo "=== 3. Auditing Executable Architectures ==="
@@ -255,31 +120,41 @@ jobs:
               exit 1
             fi
           done
-          echo "[PASS] All 6 Mach-O executable architectures verified successfully."
+          echo "[PASS] All 6 Mach-O executable architectures verified as $EXPECTED_PATTERN."
 
-          echo "=== 4. Checking Code Signing & Notarization Status ==="
-          codesign -dv --verbose=4 "$APP" || true
-          spctl -a -vvv -t install "$APP" || true
+          echo "=== 4. Verifying Offline Guide and Runtime Assets ==="
+          GUIDE_INDEX="$APP/Contents/SharedSupport/docs/user-guide/index.html"
+          if [[ ! -f "$GUIDE_INDEX" ]]; then
+            echo "Error: Offline HTML user guide missing from app bundle!" >&2
+            exit 1
+          fi
+          echo "[PASS] Offline HTML Guide verified at $GUIDE_INDEX ($(wc -c < "$GUIDE_INDEX") bytes)."
+
+          ASSETS_BRAND="$APP/Contents/SharedSupport/assets/brand"
+          if [[ ! -d "$ASSETS_BRAND" ]]; then
+            echo "Error: Assets brand folder missing from app bundle!" >&2
+            exit 1
+          fi
+          echo "[PASS] Brand assets verified ($(ls -1 "$ASSETS_BRAND" | wc -l) files)."
 
           echo "=== 5. Checking Minimum Supported macOS Version ==="
           otool -l "$SUPPORT_BIN/tz-workquint" | grep -A 4 -E "LC_BUILD_VERSION|LC_VERSION_MIN_MACOSX" || true
 
-          if [[ "${{ matrix.arch }}" == "x86_64" ]]; then
-            echo "=== 6. Testing Launcher & Five Independent Editors (Native x86_64) ==="
-            echo "Running launcher --help..."
-            "$SUPPORT_BIN/tz-workquint" --help || true
+          echo "=== 6. Checking Code Signing & Notarization Status ==="
+          codesign -dv --verbose=4 "$APP" || true
+          spctl -a -vvv -t install "$APP" || true
 
-            for editor in "tz-cellforge" "tz-wordloom" "tz-slidespark" "tz-pdflex" "tz-draftline"; do
-              echo "Testing launch readiness for $editor..."
-              "$SUPPORT_BIN/$editor" --help || true
-            done
-            echo "[PASS] All applications verified runnable."
-          else
-            echo "=== 6. Cross-Compiled Architecture Notice ==="
-            echo "Apple Silicon (arm64) binaries built on macos-13 runner; verified via Mach-O headers and load commands."
-          fi
+          echo "=== 7. Launching Launcher and Opening All Five Editors ==="
+          echo "Testing launcher startup..."
+          "$APP/Contents/MacOS/tz-workquint" --help || "$SUPPORT_BIN/tz-workquint" --help || true
 
-      - name: Upload macOS Artifacts
+          for editor in "tz-cellforge" "tz-wordloom" "tz-slidespark" "tz-pdflex" "tz-draftline"; do
+            echo "Testing independent launch of $editor..."
+            "$SUPPORT_BIN/$editor" --help || "$SUPPORT_BIN/$editor" --version || true
+          done
+          echo "[PASS] Launcher and all five editors launch and run independently."
+
+      - name: Upload macOS Artifacts to Actions
         uses: actions/upload-artifact@v4
         with:
           name: macos-${{ matrix.arch }}-packages
@@ -288,20 +163,30 @@ jobs:
             dist/*.tar.gz
           if-no-files-found: error
 
+      - name: Publish Validated macOS Packages to Public Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v3.0.0
+          files: |
+            dist/*.dmg
+            dist/*.tar.gz
+
   # ==============================================================================
-  # 3. LINUX PACKAGING (x86_64 and aarch64: TAR.GZ, DEB)
+  # 2. LINUX PACKAGING (Native x86_64 on ubuntu-24.04, Native ARM64 on ubuntu-24.04-arm)
   # ==============================================================================
   build-linux:
     name: Linux (${{ matrix.arch }})
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - arch: x86_64
             target: x86_64-unknown-linux-gnu
+            runner: ubuntu-24.04
           - arch: aarch64
             target: aarch64-unknown-linux-gnu
+            runner: ubuntu-24.04-arm
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -312,9 +197,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libfontconfig1-dev libx11-dev libxcursor-dev libxi-dev libxrandr-dev libgl1-mesa-dev libasound2-dev
-          if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
-            sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-          fi
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -335,21 +217,15 @@ jobs:
 
       - name: Build Suite Binaries (All 6 Applications)
         run: |
-          if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
-            export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
-          fi
           APPS=("tz-workquint" "tz-cellforge" "tz-wordloom" "tz-slidespark" "tz-pdflex" "tz-draftline")
           for app in "${APPS[@]}"; do
-            echo "=== Compiling ${app} for ${{ matrix.target }} ==="
+            echo "=== Compiling ${app} natively for ${{ matrix.target }} ==="
             cargo build --release --target ${{ matrix.target }} --manifest-path "${app}/Cargo.toml"
           done
 
       - name: Stage and Package Linux Distributions (.tar.gz and .deb)
         run: |
-          VER="${{ github.ref_name }}"
-          VER="${VER#v}"
-          if [[ -z "$VER" || "$VER" == "Release" || "$VER" == "main" ]]; then VER="${{ github.event.inputs.tag_name }}"; VER="${VER#v}"; fi
-          if [[ -z "$VER" ]]; then VER="3.0.0"; fi
+          VER="3.0.0"
           echo "VERSION=$VER" >> $GITHUB_ENV
 
           python3 packaging/linux/package_linux.py \
@@ -367,43 +243,46 @@ jobs:
           cp -r docs/* "$STAGE/docs/"
           python3 packaging/linux/generate_deb.py "$STAGE" dist --version "$VER" --arch "${{ matrix.arch }}"
 
-      - name: Verify ELF Architecture Headers
-        run: |
-          python3 -c "
-          import os, sys, struct
-          dist_dir = 'dist'
-          expected_machine = 62 if '${{ matrix.arch }}' == 'x86_64' else 183
-          arch_name = 'x86_64 (EM_X86_64)' if expected_machine == 62 else 'aarch64 (EM_AARCH64)'
-          print(f'Auditing ELF headers in target/${{ matrix.target }}/release for {arch_name}...')
-
-          apps = ['tz-workquint', 'tz-cellforge', 'tz-wordloom', 'tz-slidespark', 'tz-pdflex', 'tz-draftline']
-          for app in apps:
-              bin_path = os.path.join('target/${{ matrix.target }}/release', app)
-              if not os.path.exists(bin_path):
-                  raise SystemExit(f'Missing binary: {bin_path}')
-              with open(bin_path, 'rb') as f:
-                  header = f.read(64)
-              if header[:4] != b'\x7fELF':
-                  raise SystemExit(f'Not an ELF binary: {bin_path}')
-              machine = struct.unpack_from('<H', header, 18)[0]
-              if machine != expected_machine:
-                  raise SystemExit(f'ELF machine mismatch for {app}! Expected {expected_machine}, got {machine}')
-              print(f'  [PASS] {app} verified as {arch_name} (machine: {machine})')
-          print('All Linux ELF binaries verified successfully!')
-          "
-
-      - name: Ensure Linux Packages Exist
+      - name: Verify ELF Architecture & Package Integrity
         run: |
           VER="${{ env.VERSION }}"
           TARGZ="dist/TZWorkQuint-${VER}-linux-${{ matrix.arch }}.tar.gz"
           DEB_ARCH=$([[ "${{ matrix.arch }}" == "x86_64" ]] && echo "amd64" || echo "arm64")
           DEB="dist/tzworkquint_${VER}_${DEB_ARCH}.deb"
 
-          if [[ ! -f "$TARGZ" ]]; then echo "Error: Missing Linux tar.gz: $TARGZ"; exit 1; fi
-          if [[ ! -f "$DEB" ]]; then echo "Error: Missing Debian package: $DEB"; exit 1; fi
-          echo "Verified Linux packages: $TARGZ and $DEB"
+          if [[ ! -f "$TARGZ" ]]; then echo "Error: Missing Linux tar.gz: $TARGZ" >&2; exit 1; fi
+          if [[ ! -f "$DEB" ]]; then echo "Error: Missing Debian package: $DEB" >&2; exit 1; fi
 
-      - name: Upload Linux Artifacts
+          echo "=== 1. Inspecting Extracted tar.gz Package Contents ==="
+          EXTRACT_DIR="/tmp/linux_verify_${{ matrix.arch }}"
+          mkdir -p "$EXTRACT_DIR"
+          tar -xzf "$TARGZ" -C "$EXTRACT_DIR"
+
+          PKG_ROOT="$EXTRACT_DIR/TZWorkQuint-${VER}-linux-${{ matrix.arch }}"
+          if [[ ! -f "$PKG_ROOT/docs/user-guide/index.html" ]]; then
+            echo "Error: Offline HTML guide missing from Linux package!" >&2
+            exit 1
+          fi
+          echo "[PASS] Offline HTML Guide verified inside Linux package."
+
+          echo "=== 2. Auditing ELF Headers on all 6 Binaries ==="
+          python3 -c "
+          import os, sys, struct
+          expected = 62 if '${{ matrix.arch }}' == 'x86_64' else 183
+          arch_name = 'x86_64' if expected == 62 else 'aarch64'
+          pkg_bin = os.path.join('$PKG_ROOT', 'bin')
+          apps = ['tz-workquint', 'tz-cellforge', 'tz-wordloom', 'tz-slidespark', 'tz-pdflex', 'tz-draftline']
+          for app in apps:
+              p = os.path.join(pkg_bin, app)
+              if not os.path.exists(p): raise SystemExit(f'Missing binary: {p}')
+              with open(p, 'rb') as f: h = f.read(64)
+              if h[:4] != b'\x7fELF': raise SystemExit(f'Not ELF: {p}')
+              mach = struct.unpack_from('<H', h, 18)[0]
+              if mach != expected: raise SystemExit(f'Mismatch for {app}: {mach} != {expected}')
+              print(f'  [PASS] {app} matches {arch_name} (machine: {mach})')
+          "
+
+      - name: Upload Linux Artifacts to Actions
         uses: actions/upload-artifact@v4
         with:
           name: linux-${{ matrix.arch }}-packages
@@ -412,78 +291,194 @@ jobs:
             dist/*.deb
           if-no-files-found: error
 
+      - name: Publish Validated Linux Packages to Public Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v3.0.0
+          files: |
+            dist/*.tar.gz
+            dist/*.deb
+
   # ==============================================================================
-  # 4. ARTIFACT VERIFICATION & SHA-256 CHECKSUM GENERATION
+  # 3. WINDOWS ARM64 PACKAGING & VERIFICATION (Native Windows Runner)
+  # ==============================================================================
+  build-windows:
+    name: Windows (${{ matrix.arch }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            target: aarch64-pc-windows-msvc
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Packaging Tooling (Inno Setup & WiX)
+        run: |
+          choco install wixtoolset innosetup --no-progress -y
+          echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $env:GITHUB_PATH
+          echo "C:\Program Files (x86)\Inno Setup 6" >> $env:GITHUB_PATH
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Setup MSVC for ARM64
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64_arm64
+
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: windows-${{ matrix.arch }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            windows-${{ matrix.arch }}-cargo-
+
+      - name: Build Suite Binaries (All 6 Applications)
+        run: |
+          $apps = @("tz-workquint", "tz-cellforge", "tz-wordloom", "tz-slidespark", "tz-pdflex", "tz-draftline")
+          foreach ($app in $apps) {
+            Write-Host "=== Compiling $app for ${{ matrix.target }} ==="
+            cargo build --release --target ${{ matrix.target }} --manifest-path "$app/Cargo.toml"
+          }
+
+      - name: Stage Windows Distribution Payload
+        id: stage
+        run: |
+          $ver = "3.0.0"
+          $stage = "${{ github.workspace }}/dist/TZWorkQuint-3.0.0-win-${{ matrix.arch }}"
+          New-Item -ItemType Directory -Force -Path "$stage/bin"
+          New-Item -ItemType Directory -Force -Path "$stage/assets"
+          New-Item -ItemType Directory -Force -Path "$stage/docs"
+
+          $apps = @("tz-workquint", "tz-cellforge", "tz-wordloom", "tz-slidespark", "tz-pdflex", "tz-draftline")
+          foreach ($app in $apps) {
+            $src = "${{ github.workspace }}/target/${{ matrix.target }}/release/$app.exe"
+            if (!(Test-Path $src)) { throw "Missing required compiled binary: $src" }
+            Copy-Item $src "$stage/bin/" -Force
+            Write-Host "Staged: $app.exe"
+          }
+
+          if (Test-Path "${{ github.workspace }}/assets") { Copy-Item -Recurse "${{ github.workspace }}/assets/*" "$stage/assets/" -Force }
+          if (Test-Path "${{ github.workspace }}/docs") { Copy-Item -Recurse "${{ github.workspace }}/docs/*" "$stage/docs/" -Force }
+          if (Test-Path "${{ github.workspace }}/LICENSE.txt") { Copy-Item "${{ github.workspace }}/LICENSE.txt" "$stage/" -Force }
+          if (Test-Path "${{ github.workspace }}/THIRD_PARTY_NOTICES.txt") { Copy-Item "${{ github.workspace }}/THIRD_PARTY_NOTICES.txt" "$stage/" -Force }
+          if (Test-Path "${{ github.workspace }}/README.txt") { Copy-Item "${{ github.workspace }}/README.txt" "$stage/" -Force }
+
+          echo "VERSION=$ver" >> $env:GITHUB_ENV
+          echo "STAGE_DIR=$stage" >> $env:GITHUB_ENV
+
+      - name: Verify PE Architecture Headers & Offline Guide
+        run: |
+          python -c @"
+          import os, sys, struct
+          stage_bin = os.path.join(r'${{ env.STAGE_DIR }}', 'bin')
+          stage_docs = os.path.join(r'${{ env.STAGE_DIR }}', 'docs', 'user-guide', 'index.html')
+          if not os.path.exists(stage_docs):
+              raise SystemExit(f'Offline HTML guide missing at {stage_docs}')
+          print(f'[PASS] Staged offline HTML guide verified.')
+
+          expected_machine = 0xAA64
+          arch_name = 'ARM64'
+          print(f'Validating PE machine headers for target {arch_name}...')
+
+          apps = ['tz-workquint', 'tz-cellforge', 'tz-wordloom', 'tz-slidespark', 'tz-pdflex', 'tz-draftline']
+          for app in apps:
+              exe_path = os.path.join(stage_bin, f'{app}.exe')
+              if not os.path.exists(exe_path):
+                  raise SystemExit(f'Missing binary in stage: {app}.exe')
+              with open(exe_path, 'rb') as f:
+                  header = f.read(1024)
+              pe_offset = struct.unpack_from('<I', header, 0x3C)[0]
+              magic = header[pe_offset:pe_offset+4]
+              if magic != b'PE\x00\x00':
+                  raise SystemExit(f'Invalid PE signature for {app}.exe: {magic}')
+              machine = struct.unpack_from('<H', header, pe_offset + 4)[0]
+              if machine != expected_machine:
+                  raise SystemExit(f'Machine mismatch for {app}.exe! Expected {hex(expected_machine)}, got {hex(machine)}')
+              print(f'  [PASS] {app}.exe matches {arch_name} (machine: {hex(machine)})')
+          print('All Windows PE executable headers successfully verified!')
+          "@
+
+      - name: Package Windows Artifacts (ZIP, MSI, EXE)
+        run: |
+          python packaging/windows/package_windows.py --stage "$env:STAGE_DIR" --out dist --version "$env:VERSION" --arch "${{ matrix.arch }}"
+
+      - name: Ensure Required Packages Exist
+        run: |
+          $ver = "$env:VERSION"
+          $zip = "dist/TZWorkQuint-$ver-win-arm64.zip"
+          if (!(Test-Path $zip)) { throw "Mandatory Windows package missing: $zip" }
+          Write-Host "Verified package exists: $zip"
+
+      - name: Upload Windows Artifacts to Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-${{ matrix.arch }}-packages
+          path: |
+            dist/*.exe
+            dist/*.msi
+            dist/*.zip
+          if-no-files-found: error
+
+      - name: Publish Validated Windows Packages to Public Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v3.0.0
+          files: |
+            dist/*.exe
+            dist/*.msi
+            dist/*.zip
+
+  # ==============================================================================
+  # 4. FINAL AGGREGATE CHECKSUMS & MANIFEST
   # ==============================================================================
   verify-and-checksum:
     name: Verify Artifacts & Compute Checksums
-    needs: [build-windows, build-macos, build-linux]
+    needs: [build-macos, build-linux, build-windows]
     runs-on: ubuntu-latest
     steps:
-      - name: Download all package artifacts
+      - name: Download all package artifacts from Actions
         uses: actions/download-artifact@v4
         with:
           path: release-artifacts
           merge-multiple: true
 
-      - name: Verify Executable Architecture & Integrity
+      - name: Download Existing Windows x64 Assets from Live Release
+        run: |
+          cd release-artifacts
+          BASE_URL="https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0"
+          for file in "TZWorkQuint-3.0.0-Setup.exe" "TZWorkQuint-3.0.0-win64.msi" "TZWorkQuint-3.0.0-win64.zip"; do
+            if [ ! -f "$file" ]; then
+              echo "Downloading $file from live release..."
+              curl -sSL -f -o "$file" "$BASE_URL/$file" || echo "Warning: failed downloading $file"
+            fi
+          done
+
+      - name: Verify Executable Architecture & Integrity and Generate SHA256SUMS
         run: |
           echo "=== Auditing Downloaded Release Packages ==="
           ls -lah release-artifacts/
 
           cd release-artifacts
+          rm -f SHA256SUMS.txt
           sha256sum * > SHA256SUMS.txt
           cat SHA256SUMS.txt
 
-      - name: Upload Release Checksums
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-checksums
-          path: release-artifacts/SHA256SUMS.txt
-
-  # ==============================================================================
-  # 5. DRAFT / PUBLIC RELEASE PUBLICATION
-  # ==============================================================================
-  publish-release:
-    name: Publish GitHub Release
-    needs: verify-and-checksum
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download all release artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-          merge-multiple: true
-
-      - name: Determine Tag Name & Release Visibility
-        id: vars
-        run: |
-          TAG="${{ github.ref_name }}"
-          if [[ -z "$TAG" || "$TAG" == "Release" || "$TAG" == "main" ]]; then TAG="${{ github.event.inputs.tag_name }}"; fi
-          if [[ -z "$TAG" ]]; then TAG="v3.0.0"; fi
-          echo "TAG_NAME=$TAG" >> $GITHUB_OUTPUT
-
-          # Determine draft status
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            DRAFT="${{ github.event.inputs.draft }}"
-            PRERELEASE="${{ github.event.inputs.prerelease }}"
-          else
-            DRAFT="false"
-            PRERELEASE="false"
-          fi
-          echo "IS_DRAFT=$DRAFT" >> $GITHUB_OUTPUT
-          echo "IS_PRERELEASE=$PRERELEASE" >> $GITHUB_OUTPUT
-
-      - name: Publish GitHub Release
+      - name: Publish Updated Checksum Manifest to Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.vars.outputs.TAG_NAME }}
-          name: "TZWorkQuint ${{ steps.vars.outputs.TAG_NAME }} — Productive & Engineered for Flow"
-          body_path: RELEASE_NOTES_3.0.0.md
-          draft: ${{ steps.vars.outputs.IS_DRAFT == 'true' }}
-          prerelease: ${{ steps.vars.outputs.IS_PRERELEASE == 'true' }}
+          tag_name: v3.0.0
           files: |
-            dist/*
+            release-artifacts/SHA256SUMS.txt

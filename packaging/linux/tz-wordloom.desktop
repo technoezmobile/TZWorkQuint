@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=TZ Wordloom
+Comment=Word processor for documents and prose
+Exec=tz-wordloom %F
+Icon=tz-wordloom
+Terminal=false
+Type=Application
+Categories=Office;WordProcessor;
+MimeType=application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/msword;
+Keywords=Word;Document;DOCX;Writing;Editor;
+StartupWMClass=tz-wordloom
+

@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+contact_links:
+  - name: TZLabs Official Portal
+    url: https://tzlabs.in
+    about: Learn more about the TZLabs engineering vision and desktop applications.
+  - name: TZWorkQuint Offline Documentation
+    url: https://github.com/technoezmobile/TZWorkQuint/tree/main/docs
+    about: Read getting started guides, AI gateway configuration, and offline manuals.
+

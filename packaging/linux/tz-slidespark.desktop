@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=TZ SlideSpark
+Comment=Presentation design and slide presentation studio
+Exec=tz-slidespark %F
+Icon=tz-slidespark
+Terminal=false
+Type=Application
+Categories=Office;Presentation;
+MimeType=application/vnd.openxmlformats-officedocument.presentationml.presentation;application/vnd.ms-powerpoint;
+Keywords=PowerPoint;Presentation;Slides;PPTX;Deck;
+StartupWMClass=tz-slidespark
+

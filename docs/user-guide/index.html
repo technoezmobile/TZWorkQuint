@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overview – TZWorkQuint User Documentation</title>
+  <style>
+:root {
+  --bg-page: #0B0F17;
+  --bg-card: #131B2A;
+  --bg-elevated: #1E293B;
+  --border: #2D3D54;
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-dim: #64748B;
+  --accent-blue: #38BDF8;
+  --accent-green: #10B981;
+  --accent-purple: #8B5CF6;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', Consolas, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.6;
+  font-size: 14px;
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 280px;
+  background: #080C14;
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.brand-pill {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 13px;
+  color: #FFF;
+}
+.brand-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFF;
+}
+.brand-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.nav-group-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+}
+.nav-link.active {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+.content {
+  flex: 1;
+  max-width: 900px;
+  padding: 40px 48px;
+  overflow-y: auto;
+}
+h1 { font-size: 28px; font-weight: 800; margin-bottom: 12px; color: #FFF; }
+h2 { font-size: 20px; font-weight: 700; margin-top: 32px; margin-bottom: 12px; color: #FFF; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 16px; font-weight: 600; margin-top: 20px; margin-bottom: 8px; color: var(--accent-blue); }
+p { margin-bottom: 14px; color: var(--text-muted); }
+ul, ol { margin-left: 24px; margin-bottom: 16px; color: var(--text-muted); }
+li { margin-bottom: 6px; }
+strong { color: var(--text-main); }
+code {
+  font-family: var(--font-mono);
+  background: var(--bg-card);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  font-size: 12.5px;
+  color: #38BDF8;
+}
+pre {
+  font-family: var(--font-mono);
+  background: #06090F;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin-bottom: 18px;
+  font-size: 12px;
+  color: #E2E8F0;
+  line-height: 1.5;
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #FFF;
+}
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.badge-green { background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-blue { background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); }
+.badge-purple { background: rgba(139, 92, 246, 0.15); color: #A78BFA; border: 1px solid rgba(139, 92, 246, 0.3); }
+.img-figure {
+  margin: 20px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+.img-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.img-caption {
+  padding: 8px 12px;
+  font-size: 11.5px;
+  color: var(--text-dim);
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+th, td {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+th {
+  background: var(--bg-elevated);
+  font-weight: 700;
+  color: var(--text-main);
+}
+td { background: var(--bg-card); color: var(--text-muted); }
+</style>
+</head>
+<body>
+  
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-pill">TZ</div>
+        <div>
+          <div class="brand-name">TZWorkQuint</div>
+          <div class="brand-sub">Offline User Documentation</div>
+        </div>
+      </div>
+      <div>
+        <div class="nav-group-title">User Documentation</div>
+        <a class="nav-link active" href="index.html">Suite Overview</a>
+<a class="nav-link " href="01_quick_start.html">1. Quick Start</a>
+<a class="nav-link " href="02_tz_cellforge_guide.html">2. TZ CellForge</a>
+<a class="nav-link " href="03_tz_wordloom_guide.html">3. TZ Wordloom</a>
+<a class="nav-link " href="04_tz_pdflex_guide.html">4. TZ PDFlex</a>
+<a class="nav-link " href="05_tz_draftline_guide.html">5. TZ Draftline</a>
+<a class="nav-link " href="06_tz_slidespark_guide.html">6. TZ SlideSpark</a>
+<a class="nav-link " href="07_saving_export_undo.html">7. Saving, Export & Undo</a>
+<a class="nav-link " href="08_workspace_presets_themes.html">8. Presets & Themes</a>
+<a class="nav-link " href="09_ai_setup_and_connections.html">9. AI Connections & Routing</a>
+<a class="nav-link " href="10_troubleshooting_and_system.html">10. Troubleshooting & System</a>
+<a class="nav-link " href="11_release_notes_and_licenses.html">11. Release Notes & Licenses</a>
+
+      </div>
+      <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-dim);">
+        <div>Brand: TZLabs</div>
+        <div><a href="https://tzlabs.in" target="_blank" rel="noopener" style="color: #38BDF8; text-decoration: none;">https://tzlabs.in</a></div>
+        <div>Version 3.0.0 (Win64)</div>
+      </div>
+    </aside>
+    
+  <main class="content">
+    
+<h1>TZWorkQuint User Guide & Documentation</h1>
+<p>Welcome to <strong>TZWorkQuint</strong> (Version 3.0.0), a high-performance desktop productivity and engineering suite developed by <strong>TZLabs</strong> (<a href="https://tzlabs.in" target="_blank" style="color: #38BDF8;">https://tzlabs.in</a>) for Windows x86_64.</p>
+
+<div class="card">
+  <div class="card-title">At a Glance: The Five Suite Applications</div>
+  <ul>
+    <li><strong>TZ CellForge</strong> (Spreadsheet) — Ultra-responsive formula evaluation, bounded charting, transactional AI edits with full undo.</li>
+    <li><strong>TZ Wordloom</strong> (Document Processor) — Clean typography, page canvas, styles, and high-fidelity DOCX export.</li>
+    <li><strong>TZ PDFlex</strong> (PDF Markup & Editor) — Fast PDF rendering, page insertion/deletion/reordering, vector annotations, and digital signature verification.</li>
+    <li><strong>TZ Draftline</strong> (2D CAD Drafting) — Precise geometric entities, snap engines, DXF import/export, and coordinate command lines.</li>
+    <li><strong>TZ SlideSpark</strong> (Presentation Decks) — Slide deck choreography, layout templates, rich shapes, transitions, and presenter view.</li>
+  </ul>
+</div>
+
+<div class="img-figure">
+  <img src="assets/crop_about_dialog_dark.png" alt="Help About Dialog">
+  <div class="img-caption">Figure 1.1: Standardized Help ▸ About dialog across all suite applications.</div>
+</div>
+
+<h2>Complete 3.0.0 User Manual & Feature Reference (Markdown)</h2>
+<p>The authoritative, release-verified documentation suite is maintained in Markdown with high-resolution relative image links:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Chapter</th>
+      <th>Document File</th>
+      <th>Scope & Topic</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Index</strong></td>
+      <td><a href="README.md" style="color: #38BDF8;">README.md</a></td>
+      <td>Master User Manual index, architecture map, and sitemap.</td>
+    </tr>
+    <tr>
+      <td><strong>00</strong></td>
+      <td><a href="00_build_and_system.md" style="color: #38BDF8;">00_build_and_system.md</a></td>
+      <td>Environment, release hashes, launch paths, file associations, coexistence.</td>
+    </tr>
+    <tr>
+      <td><strong>01</strong></td>
+      <td><a href="01_hub_guide.md" style="color: #38BDF8;">01_hub_guide.md</a></td>
+      <td>TZWorkQuint Hub launcher, card grid, search, filters, appearance.</td>
+    </tr>
+    <tr>
+      <td><strong>02</strong></td>
+      <td><a href="02_wordloom_guide.md" style="color: #38BDF8;">02_wordloom_guide.md</a></td>
+      <td>TZ Wordloom word processing, styles, tracking, Word 2024 parity.</td>
+    </tr>
+    <tr>
+      <td><strong>03</strong></td>
+      <td><a href="03_cellforge_guide.md" style="color: #38BDF8;">03_cellforge_guide.md</a></td>
+      <td>TZ CellForge spreadsheets, formulas, PivotTables, Excel 2024 parity.</td>
+    </tr>
+    <tr>
+      <td><strong>04</strong></td>
+      <td><a href="04_slidespark_guide.md" style="color: #38BDF8;">04_slidespark_guide.md</a></td>
+      <td>TZ SlideSpark presentations, 6 starters, Presenter View, PPTX 2024 parity.</td>
+    </tr>
+    <tr>
+      <td><strong>05</strong></td>
+      <td><a href="05_pdflex_guide.md" style="color: #38BDF8;">05_pdflex_guide.md</a></td>
+      <td>TZ PDFlex PDF markup, AcroForms, verified zero-leak permanent redaction.</td>
+    </tr>
+    <tr>
+      <td><strong>06</strong></td>
+      <td><a href="06_draftline_guide.md" style="color: #38BDF8;">06_draftline_guide.md</a></td>
+      <td>TZ Draftline 2D CAD drafting, CLI aliases, Osnap, layers, DXF export.</td>
+    </tr>
+    <tr>
+      <td><strong>07</strong></td>
+      <td><a href="07_using_tz_assistant.md" style="color: #38BDF8;">07_using_tz_assistant.md</a></td>
+      <td>TZ Assistant copilot, gateway setup, scoped context, 5 worked examples.</td>
+    </tr>
+    <tr>
+      <td><strong>08</strong></td>
+      <td><a href="08_customization_and_themes.md" style="color: #38BDF8;">08_customization_and_themes.md</a></td>
+      <td>Optical materials (Pearl, Smoked, Glass Off), reduced motion, presets.</td>
+    </tr>
+    <tr>
+      <td><strong>09</strong></td>
+      <td><a href="09_templates_and_fonts.md" style="color: #38BDF8;">09_templates_and_fonts.md</a></td>
+      <td>Templates (.dotx, .xltx, .potx, .dwt), Aptos CloudFonts discovery, OFL fonts.</td>
+    </tr>
+    <tr>
+      <td><strong>10</strong></td>
+      <td><a href="10_troubleshooting.md" style="color: #38BDF8;">10_troubleshooting.md</a></td>
+      <td>Disabled commands, missing tabs, 1040x760 scaling, recovery journals.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>QA & Documentation Verification Artifacts</h2>
+<div class="card">
+  <div class="card-title">Inspection Records (under <code>artifacts/documentation-verification/</code>)</div>
+  <ul>
+    <li><a href="../../artifacts/documentation-verification/coverage.csv" style="color: #38BDF8;">coverage.csv</a> — 2,035 inventoried commands & options across all 6 applications.</li>
+    <li><a href="../../artifacts/documentation-verification/replay-checklist.md" style="color: #38BDF8;">replay-checklist.md</a> — App-by-app step-by-step verification procedures.</li>
+    <li><a href="../../artifacts/documentation-verification/gaps-log.md" style="color: #38BDF8;">gaps-log.md</a> — Audited product defects and divergences (Source vs UI vs Executed).</li>
+    <li><a href="../../artifacts/documentation-verification/handoff-note.md" style="color: #38BDF8;">handoff-note.md</a> — Verification summary for independent inspectors.</li>
+  </ul>
+</div>
+
+<h2>Core Principles</h2>
+<ul>
+  <li><strong>Local-First & Private:</strong> Your files never leave your machine unless you explicitly configure and invoke an external AI connection.</li>
+  <li><strong>Strictly Factual & Purpose-Built:</strong> Pure native Rust/egui implementations with direct DirectX 12 hardware acceleration.</li>
+  <li><strong>Consistent User Interface:</strong> Familiar ribbons, classic menubars, and liquid glass floating tool docks designed for 100%, 125%, and 150% Windows DPI scaling.</li>
+</ul>
+
+  </main>
+</body>
+</html>

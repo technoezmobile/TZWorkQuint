@@ -1,0 +1,44 @@
+name: Feature Request
+description: Suggest a new capability, enhancement, or format support for TZWorkQuint.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We welcome community suggestions for productivity improvements, new document filters, AI providers, and platform support!
+  - type: dropdown
+    id: application
+    attributes:
+      label: Target Application or Component
+      options:
+        - "TZWorkQuint (Suite Launcher)"
+        - "CellForge (Spreadsheets)"
+        - "Wordloom (Word Processor)"
+        - "SlideSpark (Presentations)"
+        - "PDFlex (PDF Editor & Markup)"
+        - "Draftline (2D CAD)"
+        - "TZ Assistant / AI Gateway"
+        - "Platform Packaging / Distribution"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement or Use Case
+      description: What problem would this feature solve, or what workflow does it enhance?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution & Interface
+      description: Describe how the feature should behave and feel in the user interface.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Approaches Considered
+      description: Any existing workarounds or alternative designs you considered?
+

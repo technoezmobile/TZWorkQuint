@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=TZ PDFlex
+Comment=PDF reading, annotation, and markup studio
+Exec=tz-pdflex %F
+Icon=tz-pdflex
+Terminal=false
+Type=Application
+Categories=Office;Viewer;
+MimeType=application/pdf;
+Keywords=PDF;Reader;Viewer;Annotate;Markup;
+StartupWMClass=tz-pdflex
+

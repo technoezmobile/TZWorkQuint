@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TZ PDFlex Guide – TZWorkQuint User Documentation</title>
+  <style>
+:root {
+  --bg-page: #0B0F17;
+  --bg-card: #131B2A;
+  --bg-elevated: #1E293B;
+  --border: #2D3D54;
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-dim: #64748B;
+  --accent-blue: #38BDF8;
+  --accent-green: #10B981;
+  --accent-purple: #8B5CF6;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', Consolas, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.6;
+  font-size: 14px;
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 280px;
+  background: #080C14;
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.brand-pill {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 13px;
+  color: #FFF;
+}
+.brand-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFF;
+}
+.brand-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.nav-group-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+}
+.nav-link.active {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+.content {
+  flex: 1;
+  max-width: 900px;
+  padding: 40px 48px;
+  overflow-y: auto;
+}
+h1 { font-size: 28px; font-weight: 800; margin-bottom: 12px; color: #FFF; }
+h2 { font-size: 20px; font-weight: 700; margin-top: 32px; margin-bottom: 12px; color: #FFF; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 16px; font-weight: 600; margin-top: 20px; margin-bottom: 8px; color: var(--accent-blue); }
+p { margin-bottom: 14px; color: var(--text-muted); }
+ul, ol { margin-left: 24px; margin-bottom: 16px; color: var(--text-muted); }
+li { margin-bottom: 6px; }
+strong { color: var(--text-main); }
+code {
+  font-family: var(--font-mono);
+  background: var(--bg-card);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  font-size: 12.5px;
+  color: #38BDF8;
+}
+pre {
+  font-family: var(--font-mono);
+  background: #06090F;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin-bottom: 18px;
+  font-size: 12px;
+  color: #E2E8F0;
+  line-height: 1.5;
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #FFF;
+}
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.badge-green { background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-blue { background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); }
+.badge-purple { background: rgba(139, 92, 246, 0.15); color: #A78BFA; border: 1px solid rgba(139, 92, 246, 0.3); }
+.img-figure {
+  margin: 20px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+.img-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.img-caption {
+  padding: 8px 12px;
+  font-size: 11.5px;
+  color: var(--text-dim);
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+th, td {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+th {
+  background: var(--bg-elevated);
+  font-weight: 700;
+  color: var(--text-main);
+}
+td { background: var(--bg-card); color: var(--text-muted); }
+</style>
+</head>
+<body>
+  
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-pill">TZ</div>
+        <div>
+          <div class="brand-name">TZWorkQuint</div>
+          <div class="brand-sub">Offline User Documentation</div>
+        </div>
+      </div>
+      <div>
+        <div class="nav-group-title">User Documentation</div>
+        <a class="nav-link " href="index.html">Suite Overview</a>
+<a class="nav-link " href="01_quick_start.html">1. Quick Start</a>
+<a class="nav-link " href="02_tz_cellforge_guide.html">2. TZ CellForge</a>
+<a class="nav-link " href="03_tz_wordloom_guide.html">3. TZ Wordloom</a>
+<a class="nav-link active" href="04_tz_pdflex_guide.html">4. TZ PDFlex</a>
+<a class="nav-link " href="05_tz_draftline_guide.html">5. TZ Draftline</a>
+<a class="nav-link " href="06_tz_slidespark_guide.html">6. TZ SlideSpark</a>
+<a class="nav-link " href="07_saving_export_undo.html">7. Saving, Export & Undo</a>
+<a class="nav-link " href="08_workspace_presets_themes.html">8. Presets & Themes</a>
+<a class="nav-link " href="09_ai_setup_and_connections.html">9. AI Connections & Routing</a>
+<a class="nav-link " href="10_troubleshooting_and_system.html">10. Troubleshooting & System</a>
+<a class="nav-link " href="11_release_notes_and_licenses.html">11. Release Notes & Licenses</a>
+
+      </div>
+      <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-dim);">
+        <div>Brand: TZLabs</div>
+        <div><a href="https://tzlabs.in" target="_blank" rel="noopener" style="color: #38BDF8; text-decoration: none;">https://tzlabs.in</a></div>
+        <div>Version 3.0.0 (Win64)</div>
+      </div>
+    </aside>
+    
+  <main class="content">
+    
+<h1>TZ PDFlex: PDF Editor & Markup Guide</h1>
+<p><strong>TZ PDFlex</strong> provides lightning-fast PDF viewing, page reordering, vector annotations, and digital signature verification.</p>
+
+<div class="img-figure">
+  <img src="assets/crop_pdflex_title_unobstructed.png" alt="PDFlex Unobstructed Title">
+  <div class="img-caption">Figure 4.1: Form 1040 document title banner 100% unobstructed, with floating markup bar anchored in reserved canvas space.</div>
+</div>
+
+<h2>Key Capabilities</h2>
+<ul>
+  <li><strong>Page Management:</strong> Insert, extract, delete, and reorder pages with visual drag-and-drop thumbnails.</li>
+  <li><strong>Vector Markup:</strong> Non-destructive highlight, underline, strikethrough, callout notes, and shape annotations.</li>
+  <li><strong>Anchored Markup Toolstrip:</strong> Anchored above the document sheet in reserved canvas space, preventing overlap with document titles or headers.</li>
+  <li><strong>Digital Signatures:</strong> SHA-256 certificate validation and verification badge display.</li>
+</ul>
+
+  </main>
+</body>
+</html>

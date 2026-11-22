@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=TZ Draftline
+Comment=2D CAD drawing and technical drafting workspace
+Exec=tz-draftline %F
+Icon=tz-draftline
+Terminal=false
+Type=Application
+Categories=Graphics;2DGraphics;Engineering;
+MimeType=image/vnd.dxf;application/dxf;
+Keywords=CAD;DXF;Drafting;Drawing;Vector;Geometry;
+StartupWMClass=tz-draftline
+

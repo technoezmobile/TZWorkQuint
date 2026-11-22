@@ -1,0 +1,4 @@
+f9e8c3d4eff749dec1a11b641b3722ca57a2cac6210bf1c914d3ac0af62b1eaf  TZWorkQuint-3.0.0-Setup.exe
+ae3825604c439900b55a6a4f850f291b6a6975a5fe7211e422b18d144aca224c  TZWorkQuint-3.0.0-win64.msi
+01e02efbbfa7821ffde21442ebc8ebdf83bfe4df3fb7d5bc730bef4c169e5158  TZWorkQuint-3.0.0-win64.zip
+

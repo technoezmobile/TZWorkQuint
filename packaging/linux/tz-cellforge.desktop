@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=TZ CellForge
+Comment=Spreadsheet engine and data analysis studio
+Exec=tz-cellforge %F
+Icon=tz-cellforge
+Terminal=false
+Type=Application
+Categories=Office;Spreadsheet;
+MimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.ms-excel;text/csv;
+Keywords=Excel;Spreadsheet;XLSX;CSV;Formulas;Analysis;
+StartupWMClass=tz-cellforge
+

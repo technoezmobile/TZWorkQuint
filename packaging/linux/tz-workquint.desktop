@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=TZWorkQuint
+Comment=Launcher and hub for the TZWorkQuint Productivity Suite
+Exec=tz-workquint %U
+Icon=tz-workquint
+Terminal=false
+Type=Application
+Categories=Office;Utility;
+Keywords=Office;Suite;Launcher;Productivity;
+StartupWMClass=tz-workquint
+

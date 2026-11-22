@@ -1,0 +1,20 @@
+﻿THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
+TZWorkQuint incorporates components from the following open-source projects:
+
+1. egui / eframe (MIT OR Apache-2.0)
+   Copyright (c) Emil Ernerfeldt and contributors
+
+2. wgpu / wgpu-hal (MIT OR Apache-2.0)
+   Copyright (c) wgpu contributors
+
+3. hayro (Apache-2.0)
+   Copyright (c) hayro contributors
+
+4. Lucide Icons (ISC License)
+   Copyright (c) Lucide Project contributors
+
+5. OFL Fonts: Inter, JetBrains Mono, Dancing Script
+   SIL Open Font License 1.1
+
+6. Upstream ArtCraft contributions
+   Copyright (c) 2026 ArtCraft Team and contributors (MIT OR Apache-2.0)

@@ -1,0 +1,18 @@
+[package]
+name = "gridcraft-ai"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "TZWorkQuint shared AI provider abstraction, tool orchestration, and credential security"
+
+[lints]
+workspace = true
+
+[dependencies]
+gridcraft-core = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+log = { workspace = true }
+ureq = { workspace = true }
+sha2 = { workspace = true }

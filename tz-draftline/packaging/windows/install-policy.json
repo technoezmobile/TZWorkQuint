@@ -1,0 +1,58 @@
+﻿{
+    "id":  "tz-draftline",
+    "name":  "TZ Draftline",
+    "upgradeCode":  "E639C33B-BEB8-4AE4-BEB5-B9F1EFE9DB3A",
+    "sources":  [
+                    "cadcraft.wxs"
+                ],
+    "icon":  "assets/app-icon/cadcraft.ico",
+    "localization":  [
+
+                     ],
+    "extensions":  [
+                       "UI"
+                   ],
+    "payloads":  [
+                     "cadcraft-cli.exe",
+                     "cadcraft.exe"
+                 ],
+    "registry":  [
+                     [
+                         "-1",
+                         "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\cadcraft.exe",
+                         "",
+                         "[#CadcraftExe]"
+                     ],
+                     [
+                         "-1",
+                         "Software\\Classes\\Applications\\cadcraft.exe\\shell\\open\\command",
+                         "",
+                         "\"[#CadcraftExe]\" \"%1\""
+                     ],
+                     [
+                         "-1",
+                         "Software\\Classes\\.dxf\\OpenWithProgids",
+                         "CADCraft.Drawing",
+                         ""
+                     ],
+                     [
+                         "-1",
+                         "Software\\Classes\\.dwg\\OpenWithProgids",
+                         "CADCraft.Drawing",
+                         ""
+                     ],
+                     [
+                         "-1",
+                         "Software\\Classes\\CADCraft.Drawing\\shell\\open\\command",
+                         "",
+                         "\"[#CadcraftExe]\" \"%1\""
+                     ],
+                     [
+                         "-1",
+                         "Software\\Learning Machines LLC\\CADCraft",
+                         "DesktopShortcut",
+                         "1"
+                     ]
+                 ],
+    "mode":  "dualScope"
+}

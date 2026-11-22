@@ -1,0 +1,53 @@
+﻿{
+    "id":  "tz-workquint",
+    "name":  "TZWorkQuint",
+    "mode":  "perUser",
+    "upgradeCode":  "DFAD3B41-9351-476F-BEF3-2BEDAC607927",
+    "sources":  [
+                    "artcraft-launcher.wxs"
+                ],
+    "icon":  "assets/app-icon/artcraft-launcher.ico",
+    "localization":  [
+                         "artcraft-launcher.en-us.wxl"
+                     ],
+    "extensions":  [
+                       "UI",
+                       "Util"
+                   ],
+    "payloads":  [
+                     "NOTICE",
+                     "artcraft-launcher.exe"
+                 ],
+    "registry":  [
+                     [
+                         "1",
+                         "Software\\Learning Machines LLC\\ArtCraft Launcher",
+                         "InstallDir",
+                         "[INSTALLFOLDER]"
+                     ],
+                     [
+                         "1",
+                         "Software\\Learning Machines LLC\\ArtCraft Launcher",
+                         "DesktopShortcutChoice",
+                         "[DESKTOPSHORTCUTCHOICE]"
+                     ],
+                     [
+                         "1",
+                         "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\artcraft-launcher.exe",
+                         "",
+                         "[#ArtCraftLauncherExe]"
+                     ],
+                     [
+                         "1",
+                         "Software\\Learning Machines LLC\\ArtCraft Launcher",
+                         "StartMenuShortcut",
+                         "#1"
+                     ],
+                     [
+                         "1",
+                         "Software\\Learning Machines LLC\\ArtCraft Launcher",
+                         "DesktopShortcut",
+                         "#1"
+                     ]
+                 ]
+}

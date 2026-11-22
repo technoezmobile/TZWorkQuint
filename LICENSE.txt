@@ -1,0 +1,8 @@
+﻿TZWorkQuint Productivity Suite
+Copyright (c) 2026 TZLabs (https://tzlabs.in) and contributors.
+
+Dual-licensed under either:
+- The Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
+- The MIT License (http://opensource.org/licenses/MIT)
+
+at your option.

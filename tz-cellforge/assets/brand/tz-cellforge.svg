@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#40C057"/>
+      <stop offset="50%" stop-color="#2F9E44"/>
+      <stop offset="100%" stop-color="#237032"/>
+    </linearGradient>
+    <linearGradient id="gridSurface" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#EBFBEE"/>
+    </linearGradient>
+    <filter id="shadowGrid" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0F3814" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base (Emerald Green) -->
+  <rect width="512" height="512" rx="108" fill="url(#bgGrid)"/>
+  <rect x="8" y="8" width="496" height="496" rx="100" fill="none" stroke="#8CE99A" stroke-width="3" stroke-opacity="0.4"/>
+
+  <!-- High Precision Data Table Sheet -->
+  <g filter="url(#shadowGrid)">
+    <rect x="96" y="96" width="320" height="320" rx="24" fill="url(#gridSurface)"/>
+    
+    <!-- Table Header Row -->
+    <path d="M 96 120 A 24 24 0 0 1 120 96 L 392 96 A 24 24 0 0 1 416 120 L 416 160 L 96 160 Z" fill="#2B8A3E"/>
+    
+    <!-- Column Headers -->
+    <rect x="116" y="118" width="56" height="20" rx="6" fill="#D3F9D8"/>
+    <rect x="192" y="118" width="56" height="20" rx="6" fill="#D3F9D8"/>
+    <rect x="268" y="118" width="56" height="20" rx="6" fill="#D3F9D8"/>
+    <rect x="344" y="118" width="52" height="20" rx="6" fill="#D3F9D8"/>
+
+    <!-- Grid Lines -->
+    <line x1="96" y1="220" x2="416" y2="220" stroke="#D3F9D8" stroke-width="3"/>
+    <line x1="96" y1="280" x2="416" y2="280" stroke="#D3F9D8" stroke-width="3"/>
+    <line x1="96" y1="340" x2="416" y2="340" stroke="#D3F9D8" stroke-width="3"/>
+
+    <line x1="180" y1="160" x2="180" y2="416" stroke="#D3F9D8" stroke-width="3"/>
+    <line x1="260" y1="160" x2="260" y2="416" stroke="#D3F9D8" stroke-width="3"/>
+    <line x1="340" y1="160" x2="340" y2="416" stroke="#D3F9D8" stroke-width="3"/>
+
+    <!-- Highlighted Active Calculation Cell (Cell B2) -->
+    <rect x="180" y="220" width="80" height="60" fill="#B2F2BB" stroke="#2F9E44" stroke-width="4"/>
+    <circle cx="220" cy="250" r="10" fill="#2B8A3E"/>
+
+    <!-- Formula Sigma Mark in bottom corner -->
+    <text x="378" y="385" font-family="'Segoe UI', sans-serif" font-size="32" font-weight="900" fill="#2F9E44" text-anchor="middle">∑</text>
+  </g>
+</svg>
+

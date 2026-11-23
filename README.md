@@ -49,12 +49,12 @@ The first public release of the unified suite is **v3.0.0**. You can download ve
 
 ### macOS
 
-| Target | Package Format | Filename | Direct Download Link |
-| :--- | :--- | :--- | :--- |
-| **Apple Silicon (M1/M2/M3/M4)** | Disk Image (`.dmg`) | `TZWorkQuint-3.0.0-macos-aarch64.dmg` | [Download Apple Silicon DMG](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-aarch64.dmg) |
-| **Apple Silicon (M1/M2/M3/M4)** | Portable Archive | `TZWorkQuint-3.0.0-macos-aarch64.tar.gz` | [Download Apple Silicon tar.gz](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-aarch64.tar.gz) |
-| **macOS Intel (x86_64)** | Disk Image (`.dmg`) | `TZWorkQuint-3.0.0-macos-x86_64.dmg` | [Download macOS Intel DMG](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-x86_64.dmg) |
-| **macOS Intel (x86_64)** | Portable Archive | `TZWorkQuint-3.0.0-macos-x86_64.tar.gz` | [Download macOS Intel tar.gz](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-x86_64.tar.gz) |
+| Target | Package Format | Filename | Size | Verification |
+| :--- | :--- | :--- | :---: | :--- |
+| **Apple Silicon (aarch64)** | Disk Image (`.dmg`) | [`TZWorkQuint-3.0.0-macos-aarch64.dmg`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-aarch64.dmg) | 186 MB | [SHA256](SHA256SUMS.txt) |
+| **Apple Silicon (aarch64)** | Portable Archive | [`TZWorkQuint-3.0.0-macos-aarch64.tar.gz`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-aarch64.tar.gz) | 173 MB | [SHA256](SHA256SUMS.txt) |
+| **macOS Intel (x86_64)** | Disk Image (`.dmg`) | [`TZWorkQuint-3.0.0-macos-x86_64.dmg`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-x86_64.dmg) | 198 MB | [SHA256](SHA256SUMS.txt) |
+| **macOS Intel (x86_64)** | Portable Archive | [`TZWorkQuint-3.0.0-macos-x86_64.tar.gz`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-x86_64.tar.gz) | 181 MB | [SHA256](SHA256SUMS.txt) |
 
 > [!TIP]
 > **Portable Installation:** Extract the **entire archive** into a writable directory and launch `bin/tz-workquint` (or `bin/tz-workquint.exe`). Keep the `assets/` and `docs/` directories alongside `bin/`.

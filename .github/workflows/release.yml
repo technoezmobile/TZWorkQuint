@@ -149,12 +149,12 @@ jobs:
           spctl -a -vvv -t install "$APP" || true
 
           echo "=== 7. Launching Launcher and Opening All Five Editors ==="
-          echo "Testing launcher startup..."
-          "$APP/Contents/MacOS/tz-workquint" --help || "$SUPPORT_BIN/tz-workquint" --help || true
+          echo "Testing launcher startup with --version..."
+          "$APP/Contents/MacOS/tz-workquint" --version
 
           for editor in "tz-cellforge" "tz-wordloom" "tz-slidespark" "tz-pdflex" "tz-draftline"; do
-            echo "Testing independent launch of $editor..."
-            "$SUPPORT_BIN/$editor" --help || "$SUPPORT_BIN/$editor" --version || true
+            echo "Testing independent launch of $editor with --version..."
+            "$SUPPORT_BIN/$editor" --version
           done
           echo "[PASS] Launcher and all five editors launch and run independently."
 

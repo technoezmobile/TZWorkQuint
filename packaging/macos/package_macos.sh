@@ -43,10 +43,11 @@ for app in "${APPS[@]}"; do
     fi
 done
 
-# Main executable entry point symlink or wrapper
-ln -sf "../SharedSupport/bin/tz-workquint" "${STAGE_APP}/Contents/MacOS/tz-workquint"
+# 4. Main executable entry point (regular file required for codesign and launch services)
+cp "${STAGE_APP}/Contents/SharedSupport/bin/tz-workquint" "${STAGE_APP}/Contents/MacOS/tz-workquint"
+chmod +x "${STAGE_APP}/Contents/MacOS/tz-workquint"
 
-# 4. Copy shared assets and docs
+# 5. Copy shared assets and docs
 if [[ -d "${ROOT_DIR}/assets" ]]; then
     cp -R "${ROOT_DIR}/assets" "${STAGE_APP}/Contents/SharedSupport/"
 fi

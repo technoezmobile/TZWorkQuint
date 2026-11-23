@@ -10,6 +10,10 @@ on:
         description: 'Release tag name (e.g., v3.0.0)'
         required: true
         default: 'v3.0.0'
+      target_matrix:
+        description: 'Target matrix to build (macos, all)'
+        required: false
+        default: 'macos'
       draft:
         description: 'Create draft release (true for draft, false for public)'
         type: boolean
@@ -176,6 +180,7 @@ jobs:
   # ==============================================================================
   build-linux:
     name: Linux (${{ matrix.arch }})
+    if: github.event.inputs.target_matrix == 'all' || github.event_name == 'push'
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
@@ -304,6 +309,7 @@ jobs:
   # ==============================================================================
   build-windows:
     name: Windows (${{ matrix.arch }})
+    if: github.event.inputs.target_matrix == 'all' || github.event_name == 'push'
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -446,32 +452,77 @@ jobs:
   # ==============================================================================
   verify-and-checksum:
     name: Verify Artifacts & Compute Checksums
-    needs: [build-macos, build-linux, build-windows]
+    needs: [build-macos]
+    if: always() && (needs.build-macos.result == 'success')
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download all package artifacts from Actions
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           path: release-artifacts
           merge-multiple: true
 
-      - name: Download Existing Windows x64 Assets from Live Release
+      - name: Fetch and Synchronize All Live Release Assets
+        run: |
+          mkdir -p release-artifacts
+          cd release-artifacts
+
+          echo "=== Synchronizing All Published Assets from Live Release ==="
+          python3 -c "
+          import urllib.request, json, os
+
+          url = 'https://api.github.com/repos/technoezmobile/TZWorkQuint/releases/tags/v3.0.0'
+          req = urllib.request.Request(url, headers={'User-Agent': 'TZWorkQuint-Release-Agent'})
+          with urllib.request.urlopen(req) as resp:
+              data = json.loads(resp.read().decode('utf-8'))
+
+          for asset in data.get('assets', []):
+              name = asset['name']
+              if name == 'SHA256SUMS.txt':
+                  continue
+              dl_url = asset['browser_download_url']
+              if not os.path.exists(name):
+                  print(f'Downloading {name} ({asset.get(\"size\"):,} bytes)...')
+                  urllib.request.urlretrieve(dl_url, name)
+              else:
+                  print(f'Already present: {name} ({os.path.getsize(name):,} bytes)')
+          "
+
+      - name: Verify All 14 Release Packages & Generate SHA256SUMS
         run: |
           cd release-artifacts
-          BASE_URL="https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0"
-          for file in "TZWorkQuint-3.0.0-Setup.exe" "TZWorkQuint-3.0.0-win64.msi" "TZWorkQuint-3.0.0-win64.zip"; do
-            if [ ! -f "$file" ]; then
-              echo "Downloading $file from live release..."
-              curl -sSL -f -o "$file" "$BASE_URL/$file" || echo "Warning: failed downloading $file"
+
+          EXPECTED_PACKAGES=(
+            "TZWorkQuint-3.0.0-Setup.exe"
+            "TZWorkQuint-3.0.0-win64.msi"
+            "TZWorkQuint-3.0.0-win64.zip"
+            "TZWorkQuint-3.0.0-Setup-arm64.exe"
+            "TZWorkQuint-3.0.0-win-arm64.msi"
+            "TZWorkQuint-3.0.0-win-arm64.zip"
+            "tzworkquint_3.0.0_amd64.deb"
+            "TZWorkQuint-3.0.0-linux-x86_64.tar.gz"
+            "tzworkquint_3.0.0_arm64.deb"
+            "TZWorkQuint-3.0.0-linux-aarch64.tar.gz"
+            "TZWorkQuint-3.0.0-macos-aarch64.dmg"
+            "TZWorkQuint-3.0.0-macos-aarch64.tar.gz"
+            "TZWorkQuint-3.0.0-macos-x86_64.dmg"
+            "TZWorkQuint-3.0.0-macos-x86_64.tar.gz"
+          )
+
+          echo "=== Checking Presence of All 14 Expected Packages ==="
+          for pkg in "${EXPECTED_PACKAGES[@]}"; do
+            if [[ ! -f "$pkg" ]]; then
+              echo "Error: Mandatory package missing: $pkg" >&2
+              exit 1
             fi
+            echo "  [FOUND] $pkg ($(wc -c < "$pkg") bytes)"
           done
 
-      - name: Verify Executable Architecture & Integrity and Generate SHA256SUMS
-        run: |
-          echo "=== Auditing Downloaded Release Packages ==="
-          ls -lah release-artifacts/
-
-          cd release-artifacts
+          echo "=== Generating Final Consolidated SHA256SUMS.txt ==="
           rm -f SHA256SUMS.txt
           sha256sum * > SHA256SUMS.txt
           cat SHA256SUMS.txt

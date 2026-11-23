@@ -25,27 +25,39 @@ Every application in the suite runs as its own decoupled OS process with its own
 
 ## Downloads (v3.0.0)
 
-The first public release of the unified suite is **v3.0.0**. You can download verified Windows release packages directly from [GitHub Releases](https://github.com/technoezmobile/TZWorkQuint/releases/tag/v3.0.0).
+The first public release of the unified suite is **v3.0.0**. You can download verified release packages directly from [GitHub Releases](https://github.com/technoezmobile/TZWorkQuint/releases/tag/v3.0.0).
 
-### Available Windows x64 Downloads
+### Windows
 
-| Package Format | Filename | Size | Verification |
-| :--- | :--- | :---: | :--- |
-| **Inno Setup Installer** | [`TZWorkQuint-3.0.0-Setup.exe`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-Setup.exe) | 115 MB | [SHA256](SHA256SUMS.txt) |
-| **WiX 3 MSI Package** | [`TZWorkQuint-3.0.0-win64.msi`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-win64.msi) | 144 MB | [SHA256](SHA256SUMS.txt) |
-| **Portable ZIP Archive** | [`TZWorkQuint-3.0.0-win64.zip`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-win64.zip) | 184 MB | [SHA256](SHA256SUMS.txt) |
+| Target | Package Format | Filename | Size | Verification |
+| :--- | :--- | :--- | :---: | :--- |
+| **Windows x64** | Inno Setup Installer | [`TZWorkQuint-3.0.0-Setup.exe`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-Setup.exe) | 115 MB | [SHA256](SHA256SUMS.txt) |
+| **Windows x64** | WiX 3 MSI Package | [`TZWorkQuint-3.0.0-win64.msi`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-win64.msi) | 144 MB | [SHA256](SHA256SUMS.txt) |
+| **Windows x64** | Portable ZIP Archive | [`TZWorkQuint-3.0.0-win64.zip`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-win64.zip) | 184 MB | [SHA256](SHA256SUMS.txt) |
+| **Windows ARM64** | Inno Setup Installer | [`TZWorkQuint-3.0.0-Setup-arm64.exe`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-Setup-arm64.exe) | 96 MB | [SHA256](SHA256SUMS.txt) |
+| **Windows ARM64** | WiX 3 MSI Package | [`TZWorkQuint-3.0.0-win-arm64.msi`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-win-arm64.msi) | 128 MB | [SHA256](SHA256SUMS.txt) |
+| **Windows ARM64** | Portable ZIP Archive | [`TZWorkQuint-3.0.0-win-arm64.zip`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-win-arm64.zip) | 161 MB | [SHA256](SHA256SUMS.txt) |
+
+### Linux
+
+| Target | Package Format | Filename | Size | Verification |
+| :--- | :--- | :--- | :---: | :--- |
+| **Linux x86_64** | Debian Package (`.deb`) | [`tzworkquint_3.0.0_amd64.deb`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/tzworkquint_3.0.0_amd64.deb) | 146 MB | [SHA256](SHA256SUMS.txt) |
+| **Linux x86_64** | Portable Tarball | [`TZWorkQuint-3.0.0-linux-x86_64.tar.gz`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-linux-x86_64.tar.gz) | 195 MB | [SHA256](SHA256SUMS.txt) |
+| **Linux ARM64** | Debian Package (`.deb`) | [`tzworkquint_3.0.0_arm64.deb`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/tzworkquint_3.0.0_arm64.deb) | 142 MB | [SHA256](SHA256SUMS.txt) |
+| **Linux ARM64** | Portable Tarball | [`TZWorkQuint-3.0.0-linux-aarch64.tar.gz`](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-linux-aarch64.tar.gz) | 195 MB | [SHA256](SHA256SUMS.txt) |
+
+### macOS
+
+| Target | Package Format | Filename | Direct Download Link |
+| :--- | :--- | :--- | :--- |
+| **Apple Silicon (M1/M2/M3/M4)** | Disk Image (`.dmg`) | `TZWorkQuint-3.0.0-macos-aarch64.dmg` | [Download Apple Silicon DMG](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-aarch64.dmg) |
+| **Apple Silicon (M1/M2/M3/M4)** | Portable Archive | `TZWorkQuint-3.0.0-macos-aarch64.tar.gz` | [Download Apple Silicon tar.gz](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-aarch64.tar.gz) |
+| **macOS Intel (x86_64)** | Disk Image (`.dmg`) | `TZWorkQuint-3.0.0-macos-x86_64.dmg` | [Download macOS Intel DMG](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-x86_64.dmg) |
+| **macOS Intel (x86_64)** | Portable Archive | `TZWorkQuint-3.0.0-macos-x86_64.tar.gz` | [Download macOS Intel tar.gz](https://github.com/technoezmobile/TZWorkQuint/releases/download/v3.0.0/TZWorkQuint-3.0.0-macos-x86_64.tar.gz) |
 
 > [!TIP]
-> **Portable Installation:** Extract the **entire ZIP** into a writable directory and launch `bin/tz-workquint.exe`. Keep the `assets/` and `docs/` directories alongside `bin/`.
-
-### Multi-Platform Availability
-
-Automated GitHub Actions workflows build and package all supported platforms:
-- **Windows:** x64 and ARM64 (Setup EXE, MSI, Portable ZIP)
-- **macOS:** Apple Silicon (aarch64) and Intel (x86_64) (Universal `.dmg`, `.tar.gz`)
-- **Linux:** x86_64 and ARM64 (Debian `.deb`, Portable `.tar.gz`)
-
-See the [.github/workflows/release.yml](.github/workflows/release.yml) pipeline for automated release artifacts across all matrix targets.
+> **Portable Installation:** Extract the **entire archive** into a writable directory and launch `bin/tz-workquint` (or `bin/tz-workquint.exe`). Keep the `assets/` and `docs/` directories alongside `bin/`.
 
 ---
 
